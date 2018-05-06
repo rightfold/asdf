@@ -1,0 +1,24 @@
+{
+  "name": "frontend",
+  "set": "psc-0.11.7",
+  "source": "https://github.com/purescript/package-sets.git",
+  "depends": [
+    "tailrec",
+    "const",
+    "functors",
+    "dom",
+    "foldable-traversable",
+    "control",
+    "tuples",
+    "console",
+    "generics-rep",
+    "free",
+    "newtype",
+    "maybe",
+    "symbols",
+    "profunctor-lenses",
+    "eff",
+    "halogen",
+    "prelude"
+  ]
+}
