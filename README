@@ -1,0 +1,7 @@
+ASDF
+
+ASDF is an open-source multi-user ledger application. You can use ASDF with
+friends and colleagues to keep track of outstanding payments.
+
+ASDF is a typical client-server application. The client can be found in the
+/frontend/ directory and the server can be found in the /backend/ directory.

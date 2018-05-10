@@ -1,0 +1,4 @@
+ASDF frontend
+
+The ASDF frontend is a single-page web browser application written in
+PureScript using the Halogen library for the graphical user interface.
