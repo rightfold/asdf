@@ -37,6 +37,8 @@
 
        PROCEDURE DIVISION.
        para-main.
+      *    TODO: Perform authorization, and validate that the debitor
+      *          and creditor accounts actually exist.
            PERFORM para-parse
            PERFORM para-generate
            MOVE fs-debitor TO ws-ledger-uuid
