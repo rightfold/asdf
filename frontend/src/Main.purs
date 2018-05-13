@@ -19,7 +19,7 @@ import Halogen.VDom.Driver (runUI)
 import Network.HTTP.Affjax (AJAX)
 
 import ASDF.Authenticate.WebStorage as Authenticate.WebStorage
-import ASDF.Dashboard.UI as Dashboard.UI
+import ASDF.Application.UI as Application.UI
 import ASDF.Login.AJAX as Login.AJAX
 import DOM.HTML (window) as DOM
 import DOM.HTML.Window (localStorage) as DOM
@@ -28,14 +28,14 @@ main :: forall eff. Eff (HalogenEffects (ajax :: AJAX | eff)) Unit
 main = runHalogenAff $ do
     interpret <- interpreter
     body <- awaitBody
-    runUI (hoist (interpret $~>> _) Dashboard.UI.ui) unit body
+    runUI (hoist (interpret $~>> _) Application.UI.ui) unit body
 
 interpreter
     :: forall eff m eff' m'
      . MonadEff (dom :: DOM | eff) m
     => MonadAff (ajax :: AJAX, dom :: DOM | eff') m'
     => MonadRec m'
-    => m (Dashboard.UI.Monad ~>> m')
+    => m (Application.UI.Monad ~>> m')
 interpreter = liftEff $ do
     window <- DOM.window
     storage <- DOM.localStorage window

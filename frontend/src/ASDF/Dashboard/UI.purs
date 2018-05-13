@@ -8,41 +8,40 @@ module ASDF.Dashboard.UI
 
 import Prelude
 
-import Data.Lens ((.=))
 import Data.Maybe (Maybe (..))
-import Halogen.Component (Component, ParentDSL, ParentHTML, parentComponent)
+import Halogen.Component (Component, ComponentDSL, ComponentHTML, component)
 import Halogen.HTML (HTML)
 
-import ASDF.Login.UI as Login.UI
 import Halogen.HTML as HH
+import Halogen.HTML.Properties as HP
 
-data State
-    = NotLoggedIn
-    | LoggedIn
-
-data Query a
-    = LoggedInQuery a
-type ChildQuery = Login.UI.Query
+type State = Unit
+data Query a =
+    Query Void
 type Input = Unit
 type Output = Void
-data Slot = LoginSlot
-type Monad = Login.UI.Monad
+type Monad (a :: Type -> Type) = a
 
-derive instance eqSlot :: Eq Slot
-derive instance ordSlot :: Ord Slot
+ui :: forall a. Component HTML Query Input Output (Monad a)
+ui = component {initialState, render, eval, receiver}
 
-ui :: Component HTML Query Input Output Monad
-ui = parentComponent {initialState, render, eval, receiver}
+initialState :: forall a. a -> State
+initialState _ = unit
 
-initialState :: Input -> State
-initialState _ = NotLoggedIn
+render :: State -> ComponentHTML Query
+render _ =
+    HH.div []
+        [ HH.select []
+            [ HH.option [] [HH.text "Debt"]
+            , HH.option [] [HH.text "Payment"] ]
+        , HH.input [ HP.type_ HP.InputNumber
+                   , HP.step (HP.Step 0.01) ]
+        , HH.select [] []
+        , HH.select [] []
+        , HH.button [] [HH.text "Append"] ]
 
-render :: State -> ParentHTML Query ChildQuery Slot Monad
-render NotLoggedIn = HH.slot LoginSlot Login.UI.ui unit (Just <<< LoggedInQuery)
-render LoggedIn = HH.text "Logged in!"
-
-eval :: Query ~> ParentDSL State Query ChildQuery Slot Output Monad
-eval (LoggedInQuery next) = next <$ (id .= LoggedIn)
+eval :: forall a. Query ~> ComponentDSL State Query Output (Monad a)
+eval (Query a) = absurd a
 
 receiver :: forall a b. a -> Maybe b
 receiver _ = Nothing
