@@ -13,6 +13,7 @@ import Halogen.Component (Component, ComponentDSL, ComponentHTML, component)
 import Halogen.HTML (HTML)
 
 import Halogen.HTML as HH
+import Halogen.HTML.Extra as HU
 import Halogen.HTML.Properties as HP
 
 type State = Unit
@@ -30,15 +31,16 @@ initialState _ = unit
 
 render :: State -> ComponentHTML Query
 render _ =
-    HH.div []
-        [ HH.select []
-            [ HH.option [] [HH.text "Debt"]
-            , HH.option [] [HH.text "Payment"] ]
-        , HH.input [ HP.type_ HP.InputNumber
-                   , HP.step (HP.Step 0.01) ]
-        , HH.select [] []
-        , HH.select [] []
-        , HH.button [] [HH.text "Append"] ]
+    HH.div [HU.classes "asdf--dashboard"]
+        [ HH.div [HU.classes "-transaction-form"]
+            [ HH.select []
+                [ HH.option [] [HH.text "Debt"]
+                , HH.option [] [HH.text "Payment"] ]
+            , HH.input [ HP.type_ HP.InputNumber
+                    , HP.step (HP.Step 0.01) ]
+            , HH.select [] []
+            , HH.select [] []
+            , HH.button [] [HH.text "Append"] ] ]
 
 eval :: forall a. Query ~> ComponentDSL State Query Output (Monad a)
 eval (Query a) = absurd a

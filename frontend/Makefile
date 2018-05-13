@@ -5,7 +5,7 @@ all: build-en build-nl
 clean:
 	rm -rf build output
 
-build-%: build-html-% build-purs-%
+build-%: build-html-% build-purs-% build-scss-%
 	true
 
 .PHONY: build-html-%
@@ -22,3 +22,8 @@ build-purs-%:
 	psc-bundle output/*/{index,foreign}.js \
 		--output build/amalgamation.$*.js \
 		--main Main
+
+.PHONY: build-scss-%
+build-scss-%:
+	mkdir -p build
+	sassc --precision 10 src/Stylesheet.scss build/amalgamation.$*.css

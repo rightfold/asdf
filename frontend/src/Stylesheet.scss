@@ -1,0 +1,92 @@
+$primary: #2adb1a;
+$secondary: magenta;
+
+$primary-fg: white;
+$secondary-fg: black;
+
+$gr: 1.61803398875;
+
+$unit: 14px;
+
+@function dullen($color, $amount) {
+    @return desaturate(lighten($color, $amount), $amount);
+}
+
+@function brighten($color, $amount) {
+    @return lighten($color, $amount);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: white;
+    color: black;
+
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: $unit;
+}
+
+@mixin control($padding: 'outside') {
+    border: none;
+    border-bottom: solid 1px $primary;
+
+    line-height: $unit * $gr;
+    @if $padding == 'inside' {
+        padding: $unit * $gr / 4 $unit * $gr / 2;
+    } @else if $padding == 'outside' {
+        padding: $unit * $gr / 4 0;
+    } @else {
+        @error 'control: invalid padding'
+    }
+    margin: 0 $unit * $gr / 2;
+
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: bold;
+}
+
+button {
+    @include control($padding: 'inside');
+
+    background: $primary;
+    color: $primary-fg;
+
+    cursor: pointer;
+
+    text-transform: uppercase;
+
+    &:hover {
+        background: brighten($primary, 10%);
+    }
+
+    &:active {
+        background: brighten($primary, 20%);
+    }
+}
+
+input[type="number"] {
+    @include control;
+
+    background: transparent;
+    color: inherit;
+}
+
+select {
+    @include control;
+
+    -moz-appearance: none;
+    -webkit-appearance: none;
+
+    background: transparent;
+    color: inherit;
+}
+
+.asdf--dashboard {
+    & > .-transaction-form {
+        background: dullen($primary, 45%);
+
+        padding: $unit * $gr $unit * $gr / 2;
+    }
+}
