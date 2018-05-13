@@ -1,0 +1,13 @@
+Account
+
+    An account is an identifier associated with transactions as either a
+    debitor or a creditor. Accounts belong to groups, not to users, and do not
+    necessarily correspond one-to-one to users.
+
+Group
+
+    A group consists of accounts, a ledger, and users.
+
+User
+
+    A user has credentials with which they log in.
