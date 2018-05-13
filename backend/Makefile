@@ -1,5 +1,5 @@
 COBC=cobc
-COBCFLAGS=-std=cobol2014 -Wall
+COBCFLAGS=-std=mf -Wall -I src/business
 
 COB_SOURCES=$(shell find src/ -name '*.cob')
 COB_OBJECTS=$(patsubst src/%.cob,build/src/%,${COB_SOURCES})
@@ -30,11 +30,11 @@ unit-test/%: build/unit-test/%
 
 build/src/%: src/%.cob ${CBL_OBJECTS}
 	mkdir -p $(dir $@)
-	${COBC} -x -o $@ $^
+	${COBC} -x -o $@ $^ ${COBCFLAGS}
 
 build/unit-test/%: unit-test/%.cob ${CBL_OBJECTS}
 	mkdir -p $(dir $@)
-	${COBC} -x -o $@ $^
+	${COBC} -x -o $@ $^ ${COBCFLAGS}
 
 build/src/%.cbl.o: src/%.cbl
 	mkdir -p $(dir $@)

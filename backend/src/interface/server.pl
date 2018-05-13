@@ -17,6 +17,14 @@ my %ENDPOINTS = (
         sub { {group_id => shift} },
     ),
     endpoint(
+        'list-ledger',
+        [qw(group)],
+        sub {
+            my @transactions = map { [split /\t/] } split(/\n/, shift);
+            {transactions => \@transactions};
+        },
+    ),
+    endpoint(
         'login',
         [qw(email_address password)],
         sub { {token => shift || undef} },

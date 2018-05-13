@@ -12,22 +12,7 @@
        DATA DIVISION.
        FILE SECTION.
        FD fd-ledger.
-       01 fs-transaction.
-           02 fs-id                    PIC X(16).
-           02 fs-type                  PIC X.
-               88 fs-debt              VALUE 'D'.
-               88 fs-payment           VALUE 'P'.
-           02 fs-timestamp.
-               03 fs-year              PIC 9(4).
-               03 fs-month             PIC 9(2).
-               03 fs-day               PIC 9(2).
-               03 fs-hour              PIC 9(2).
-               03 fs-minute            PIC 9(2).
-               03 fs-second            PIC 9(2).
-           02 fs-comment               PIC X(200).
-           02 fs-debitor               PIC X(16).
-           02 fs-creditor              PIC X(16).
-           02 fs-amount                PIC 9(10) COMP.
+       COPY 'asdf-transaction.cpy' REPLACING ==:X:== BY ==fs==.
 
        WORKING-STORAGE SECTION.
        01 ws-group                     PIC X(16).
