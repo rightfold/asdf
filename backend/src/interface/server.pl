@@ -12,6 +12,11 @@ my %ENDPOINTS = (
         sub { {transaction_id => shift} },
     ),
     endpoint(
+        'create-group',
+        [qw(name)],
+        sub { {group_id => shift} },
+    ),
+    endpoint(
         'login',
         [qw(email_address password)],
         sub { {token => shift || undef} },
