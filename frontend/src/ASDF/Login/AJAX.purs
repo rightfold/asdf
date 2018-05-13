@@ -9,7 +9,6 @@ import ASDF.Login (EmailAddress, Login (..), Password)
 import Control.Monad.Aff.Class (class MonadAff, liftAff)
 import Control.Monad.Eff.Exception (Error, error)
 import Control.Monad.Error.Class (class MonadError, throwError)
-import Control.MonadZero (guard)
 import Data.Argonaut.Core (Json, jsonEmptyObject)
 import Data.Argonaut.Decode (class DecodeJson, (.?), decodeJson)
 import Data.Argonaut.Encode (class EncodeJson, (~>), (:=), encodeJson)
@@ -44,8 +43,8 @@ instance encodeJsonRequest :: EncodeJson Request where
 
 instance decodeJsonResponse :: DecodeJson Response where
     decodeJson json = do
-        output <- decodeJson json >>= (_ .? "output")
-        pure <<< Response $ Token output <$ guard (output /= "")
+        output <- decodeJson json >>= (_ .? "token")
+        pure <<< Response $ Token <$> output
 
 decodeJsonM
     :: forall m a

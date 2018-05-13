@@ -6,8 +6,16 @@ use ASDF::PSGI;
 use Plack::Handler::FCGI;
 
 my %ENDPOINTS = (
-    endpoint('append-to-ledger', [qw(type comment debitor creditor amount)]),
-    endpoint('login', [qw(email_address password)]),
+    endpoint(
+        'append-to-ledger',
+        [qw(type comment debitor creditor amount)],
+        sub { {transaction_id => shift} },
+    ),
+    endpoint(
+        'login',
+        [qw(email_address password)],
+        sub { {token => shift || undef} },
+    ),
 );
 
 my $app = ASDF::PSGI->new(\%ENDPOINTS);
