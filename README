@@ -3,5 +3,9 @@ ASDF
 ASDF is an open-source multi-user ledger application. You can use ASDF with
 friends and colleagues to keep track of outstanding payments.
 
+All source code is released under the terms of the GNU Affero General Public
+License. See the documents /LICENSE/ and /LICENSE.AGPL/ for more information.
+If you do not receive those files, please contact the author of this program.
+
 ASDF is a typical client-server application. The client can be found in the
 /frontend/ directory and the server can be found in the /backend/ directory.
