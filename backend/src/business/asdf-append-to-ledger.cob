@@ -5,7 +5,7 @@
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
        SELECT OPTIONAL fd-ledger
-           ASSIGN DYNAMIC ws-ledger-path
+           ASSIGN DYNAMIC ws-ledger
            ACCESS IS SEQUENTIAL
            ORGANIZATION IS RECORD SEQUENTIAL.
 
@@ -30,8 +30,8 @@
            02 fs-amount                PIC 9(10) COMP.
 
        WORKING-STORAGE SECTION.
-       01 ws-ledger-uuid               PIC X(16).
-       01 ws-ledger-path               PIC X(256).
+       01 ws-group                     PIC X(16).
+       01 ws-ledger                    PIC X(256).
 
        01 ws-uuid-text                 PIC X(32).
 
@@ -41,15 +41,14 @@
       *          and creditor accounts actually exist.
            PERFORM para-parse
            PERFORM para-generate
-           MOVE fs-debitor TO ws-ledger-uuid
-               PERFORM para-append
-           MOVE fs-creditor TO ws-ledger-uuid
-               PERFORM para-append
+           PERFORM para-append
            PERFORM para-report
            STOP RUN
            .
 
        para-parse.
+           ACCEPT ws-uuid-text FROM ARGUMENT-VALUE
+               CALL 'asdf-parse-uuid' USING ws-uuid-text ws-group
            ACCEPT fs-type FROM ARGUMENT-VALUE
            ACCEPT fs-comment FROM ARGUMENT-VALUE
            ACCEPT ws-uuid-text FROM ARGUMENT-VALUE
@@ -65,9 +64,9 @@
            .
 
        para-append.
-           CALL 'asdf-format-uuid' USING ws-ledger-uuid ws-uuid-text
-           STRING '/var/lib/asdf/ledger/' ws-uuid-text
-               INTO ws-ledger-path
+           CALL 'asdf-format-uuid' USING ws-group ws-uuid-text
+           STRING '/var/lib/asdf/group/' ws-uuid-text '/ledger'
+               INTO ws-ledger
            OPEN EXTEND fd-ledger
            WRITE fs-transaction
            CLOSE fd-ledger

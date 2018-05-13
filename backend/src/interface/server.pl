@@ -8,7 +8,7 @@ use Plack::Handler::FCGI;
 my %ENDPOINTS = (
     endpoint(
         'append-to-ledger',
-        [qw(type comment debitor creditor amount)],
+        [qw(group type comment debitor creditor amount)],
         sub { {transaction_id => shift} },
     ),
     endpoint(
