@@ -8,7 +8,7 @@ module ASDF.Login.UI
 
 import Prelude
 
-import ASDF.Authenticate (Authenticate, Token, putToken)
+import ASDF.Authenticate (Authenticate, Token, getToken, putToken)
 import ASDF.Login (EmailAddress (..), Login, Password (..), login)
 import Control.Monad.Free (Free, hoistFree)
 import Control.Monad.Trans.Class (lift)
@@ -21,7 +21,7 @@ import Data.Lens (Lens', (^.), (%=), (.=), to, use)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe (..), isNothing)
 import Data.Symbol (SProxy (..))
-import Halogen.Component (Component, ComponentDSL, ComponentHTML, component)
+import Halogen.Component (Component, ComponentDSL, ComponentHTML, lifecycleComponent)
 import Halogen.HTML (HTML)
 import Halogen.Query (raise)
 
@@ -46,7 +46,8 @@ statePassword :: Lens' State String
 statePassword = prop (SProxy :: SProxy "password")
 
 data Query a
-    = InputQuery a (State -> State)
+    = InitializeQuery a
+    | InputQuery a (State -> State)
     | SubmitQuery a
 type Input = Unit
 type Output = Unit
@@ -59,7 +60,7 @@ liftLogin :: Free Login ~> Monad
 liftLogin = hoistFree (right <<< left)
 
 ui :: Component HTML Query Input Output Monad
-ui = component {initialState, render, eval, receiver}
+ui = lifecycleComponent {initialState, render, eval, receiver, initializer, finalizer}
 
 initialState :: forall a. a -> State
 initialState _ = {error: false, emailAddress: "", password: ""}
@@ -76,6 +77,11 @@ render s =
               [HH.text I18N.m_login_logIn] ] ]
 
 eval :: Query ~> ComponentDSL State Query Output Monad
+
+eval (InitializeQuery next) = do
+    token <- getToken                                      # liftAuthenticate >>> lift
+    traverse_ (const $ raise unit) token
+    pure next
 
 eval (InputQuery next f) =
     next <$ (id %= f)
@@ -98,3 +104,9 @@ eval (SubmitQuery next) = do
 
 receiver :: forall a b. a -> Maybe b
 receiver _ = Nothing
+
+initializer :: Maybe (Query Unit)
+initializer = Just $ InitializeQuery unit
+
+finalizer :: forall a. Maybe a
+finalizer = Nothing
