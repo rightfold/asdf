@@ -8,12 +8,13 @@ module ASDF.Login.UI
 
 import Prelude
 
-import ASDF.Authenticate (Authenticate, Token, getToken, putToken)
-import ASDF.Login (EmailAddress (..), Login, Password (..), login)
+import ASDF.Authenticate.Algebra (Authenticate, getToken, putToken)
+import ASDF.Credentials (EmailAddress (..), Password (..))
+import ASDF.Login.Algebra (Login, login)
+import ASDF.Token (Token)
 import Control.Monad.Free (Free, hoistFree)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero.Extra (guarding)
-import Data.Const (Const)
 import Data.Foldable (traverse_)
 import Data.Functor.Coproduct (left, right)
 import Data.Functor.Coproduct.Nested (type (<\/>))
@@ -51,13 +52,13 @@ data Query a
     | SubmitQuery a
 type Input = Unit
 type Output = Unit
-type Monad = Free (Authenticate <\/> Login <\/> Const Void)
+type Monad = Free (Authenticate <\/> Login)
 
 liftAuthenticate :: Free Authenticate ~> Monad
 liftAuthenticate = hoistFree left
 
 liftLogin :: Free Login ~> Monad
-liftLogin = hoistFree (right <<< left)
+liftLogin = hoistFree right
 
 ui :: Component HTML Query Input Output Monad
 ui = lifecycleComponent {initialState, render, eval, receiver, initializer, finalizer}

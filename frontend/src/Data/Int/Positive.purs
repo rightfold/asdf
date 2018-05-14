@@ -28,7 +28,7 @@ instance showPositive :: Show Positive where
 -- | If overflow occured such that the integer would now be negative, `review`
 -- | returns `1`.
 _Positive :: Prism' Int Positive
-_Positive = prism' (case _ of Positive a -> 1 `min` a)
+_Positive = prism' (case _ of Positive a -> 1 `max` a)
                    (\a -> Positive a <$ guard (a >= 1))
 
 -- | Monoid for adding positive integers.

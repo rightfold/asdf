@@ -1,5 +1,5 @@
 module ASDF.Account
-    ( AccountID
+    ( AccountID (..)
     ) where
 
 import Prelude

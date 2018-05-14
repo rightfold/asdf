@@ -4,8 +4,9 @@ module ASDF.Login.AJAX
 
 import Prelude
 
-import ASDF.Authenticate (Token (..))
-import ASDF.Login (EmailAddress, Login (..), Password)
+import ASDF.Credentials (EmailAddress, Password)
+import ASDF.Login.Algebra (Login (..))
+import ASDF.Token (Token (..))
 import Control.Monad.Aff.Class (class MonadAff, liftAff)
 import Control.Monad.Eff.Exception (Error, error)
 import Control.Monad.Error.Class (class MonadError, throwError)

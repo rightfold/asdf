@@ -9,9 +9,10 @@ module ASDF.Dashboard.UI
 import Prelude
 
 import Data.Maybe (Maybe (..))
-import Halogen.Component (Component, ComponentDSL, ComponentHTML, component)
+import Halogen.Component (Component, ParentDSL, ParentHTML, parentComponent)
 import Halogen.HTML (HTML)
 
+import ASDF.ListLedger.UI as ListLedger.UI
 import Halogen.HTML as HH
 import Halogen.HTML.Extra as HU
 import Halogen.HTML.Properties as HP
@@ -19,17 +20,19 @@ import Halogen.HTML.Properties as HP
 type State = Unit
 data Query a =
     Query Void
+type ChildQuery = ListLedger.UI.Query
 type Input = Unit
 type Output = Void
-type Monad (a :: Type -> Type) = a
+type Slot = Unit
+type Monad = ListLedger.UI.Monad
 
-ui :: forall a. Component HTML Query Input Output (Monad a)
-ui = component {initialState, render, eval, receiver}
+ui :: Component HTML Query Input Output Monad
+ui = parentComponent {initialState, render, eval, receiver}
 
 initialState :: forall a. a -> State
 initialState _ = unit
 
-render :: State -> ComponentHTML Query
+render :: State -> ParentHTML Query ChildQuery Slot Monad
 render _ =
     HH.div [HU.classes "asdf--dashboard"]
         [ HH.div [HU.classes "-transaction-form"]
@@ -40,9 +43,10 @@ render _ =
                     , HP.step (HP.Step 0.01) ]
             , HH.select [] []
             , HH.select [] []
-            , HH.button [] [HH.text "Append"] ] ]
+            , HH.button [] [HH.text "Append"] ]
+        , HH.slot unit ListLedger.UI.ui unit absurd ]
 
-eval :: forall a. Query ~> ComponentDSL State Query Output (Monad a)
+eval :: Query ~> ParentDSL State Query ChildQuery Slot Output Monad
 eval (Query a) = absurd a
 
 receiver :: forall a b. a -> Maybe b
