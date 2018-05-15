@@ -1,5 +1,7 @@
 module ASDF.Authenticate.Algebra
-    ( Authenticate (..)
+    ( AUTHENTICATE
+    , Authenticate (..)
+    , proxy
     , getToken
     , putToken
     , deleteToken
@@ -8,19 +10,29 @@ module ASDF.Authenticate.Algebra
 import Prelude
 
 import ASDF.Token (Token)
-import Control.Monad.Free (Free, liftF)
+import Data.Functor.Variant (FProxy)
 import Data.Maybe (Maybe)
+import Data.Symbol (SProxy (..))
+import Run (Run, lift)
+
+type AUTHENTICATE =
+    FProxy Authenticate
 
 data Authenticate a
     = GetToken (Maybe Token -> a)
     | PutToken a Token
     | DeleteToken a
 
-getToken :: Free Authenticate (Maybe Token)
-getToken = liftF $ GetToken id
+derive instance functorAuthenticate :: Functor Authenticate
 
-putToken :: Token -> Free Authenticate Unit
-putToken = liftF <<< PutToken unit
+proxy :: SProxy "authenticate"
+proxy = SProxy
 
-deleteToken :: Free Authenticate Unit
-deleteToken = liftF $ DeleteToken unit
+getToken :: forall r. Run (authenticate :: AUTHENTICATE | r) (Maybe Token)
+getToken = lift proxy $ GetToken id
+
+putToken :: forall r. Token -> Run (authenticate :: AUTHENTICATE | r) Unit
+putToken = lift proxy <<< PutToken unit
+
+deleteToken :: forall r. Run (authenticate :: AUTHENTICATE | r) Unit
+deleteToken = lift proxy $ DeleteToken unit

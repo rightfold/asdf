@@ -2,7 +2,7 @@ module ASDF.ListLedger.UI
     ( Query
     , Input
     , Output
-    , Monad
+    , Algebra
     , ui
     ) where
 
@@ -10,8 +10,7 @@ import Prelude
 
 import ASDF.Group (GroupID (..))
 import ASDF.Ledger (Transaction)
-import ASDF.ListLedger.Algebra (ListLedger, listLedger)
-import Control.Monad.Free (Free)
+import ASDF.ListLedger.Algebra (LISTLEDGER, listLedger)
 import Control.Monad.Trans.Class (lift)
 import Data.Lens (Lens', (^.), (.=))
 import Data.Lens.Record (prop)
@@ -20,6 +19,7 @@ import Data.Symbol (SProxy (..))
 import Data.UUID (nil)
 import Halogen.Component (Component, ComponentDSL, ComponentHTML, lifecycleComponent)
 import Halogen.HTML (HTML)
+import Run (Run)
 
 import Halogen.HTML as HH
 
@@ -37,9 +37,9 @@ data Query a
     = InitializeQuery a
 type Input = Unit
 type Output = Void
-type Monad = Free ListLedger
+type Algebra r = (listLedger :: LISTLEDGER | r)
 
-ui :: Component HTML Query Input Output Monad
+ui :: forall r. Component HTML Query Input Output (Run (Algebra r))
 ui = lifecycleComponent {initialState, render, eval, receiver, initializer, finalizer}
 
 initialState :: forall a. a -> State
@@ -48,7 +48,7 @@ initialState _ = {error: false, ledgerSlice: []}
 render :: State -> ComponentHTML Query
 render s = HH.text <<< show $ s ^. stateLedgerSlice
 
-eval :: Query ~> ComponentDSL State Query Output Monad
+eval :: forall r. Query ~> ComponentDSL State Query Output (Run (Algebra r))
 
 eval (InitializeQuery next) = do
   ledgerSlice <- listLedger (GroupID nil)                  # lift

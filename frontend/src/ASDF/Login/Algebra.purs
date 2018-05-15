@@ -1,5 +1,7 @@
 module ASDF.Login.Algebra
-    ( Login (..)
+    ( LOGIN
+    , Login (..)
+    , proxy
     , login
     ) where
 
@@ -7,11 +9,21 @@ import Prelude
 
 import ASDF.Credentials (EmailAddress, Password)
 import ASDF.Token (Token)
-import Control.Monad.Free (Free, liftF)
+import Data.Functor.Variant (FProxy)
 import Data.Maybe (Maybe)
+import Data.Symbol (SProxy (..))
+import Run (Run, lift)
+
+type LOGIN =
+    FProxy Login
 
 data Login a =
     Login (Maybe Token -> a) EmailAddress Password
 
-login :: EmailAddress -> Password -> Free Login (Maybe Token)
-login = (liftF <<< _) <<< Login id
+derive instance functorLogin :: Functor Login
+
+proxy :: SProxy "login"
+proxy = SProxy
+
+login :: forall r. EmailAddress -> Password -> Run (login :: LOGIN | r) (Maybe Token)
+login = (lift proxy <<< _) <<< Login id

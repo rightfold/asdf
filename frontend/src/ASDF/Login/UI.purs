@@ -2,22 +2,19 @@ module ASDF.Login.UI
     ( Query
     , Input
     , Output
-    , Monad
+    , Algebra
     , ui
     ) where
 
 import Prelude
 
-import ASDF.Authenticate.Algebra (Authenticate, getToken, putToken)
+import ASDF.Authenticate.Algebra (AUTHENTICATE, getToken, putToken)
 import ASDF.Credentials (EmailAddress (..), Password (..))
-import ASDF.Login.Algebra (Login, login)
+import ASDF.Login.Algebra (LOGIN, login)
 import ASDF.Token (Token)
-import Control.Monad.Free (Free, hoistFree)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero.Extra (guarding)
 import Data.Foldable (traverse_)
-import Data.Functor.Coproduct (left, right)
-import Data.Functor.Coproduct.Nested (type (<\/>))
 import Data.Lens (Lens', (^.), (%=), (.=), to, use)
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe (..), isNothing)
@@ -25,6 +22,7 @@ import Data.Symbol (SProxy (..))
 import Halogen.Component (Component, ComponentDSL, ComponentHTML, lifecycleComponent)
 import Halogen.HTML (HTML)
 import Halogen.Query (raise)
+import Run (Run)
 
 import ASDF.I18N as I18N
 import Halogen.HTML as HH
@@ -52,15 +50,9 @@ data Query a
     | SubmitQuery a
 type Input = Unit
 type Output = Unit
-type Monad = Free (Authenticate <\/> Login)
+type Algebra r = (authenticate :: AUTHENTICATE, login :: LOGIN | r)
 
-liftAuthenticate :: Free Authenticate ~> Monad
-liftAuthenticate = hoistFree left
-
-liftLogin :: Free Login ~> Monad
-liftLogin = hoistFree right
-
-ui :: Component HTML Query Input Output Monad
+ui :: forall r. Component HTML Query Input Output (Run (Algebra r))
 ui = lifecycleComponent {initialState, render, eval, receiver, initializer, finalizer}
 
 initialState :: forall a. a -> State
@@ -77,10 +69,10 @@ render s =
               [HE.onClick (const (Just (SubmitQuery unit)))]
               [HH.text I18N.m_login_logIn] ] ]
 
-eval :: Query ~> ComponentDSL State Query Output Monad
+eval :: forall r. Query ~> ComponentDSL State Query Output (Run (Algebra r))
 
 eval (InitializeQuery next) = do
-    token <- getToken                                      # liftAuthenticate >>> lift
+    token <- getToken                                      # lift
     traverse_ (const $ raise unit) token
     pure next
 
@@ -90,7 +82,7 @@ eval (InputQuery next f) =
 eval (SubmitQuery next) = do
     emailAddress <- use $ stateEmailAddress <<< to EmailAddress
     password <- use $ statePassword <<< to Password
-    token <- login emailAddress password                   # liftLogin >>> lift
+    token <- login emailAddress password                   # lift
 
     stateError .= isNothing token
     traverse_ success token
@@ -98,9 +90,9 @@ eval (SubmitQuery next) = do
     pure next
 
     where
-        success :: Token -> ComponentDSL State Query Output Monad Unit
+        success :: Token -> ComponentDSL State Query Output (Run (Algebra r)) Unit
         success t = do
-            putToken t                                     # liftAuthenticate >>> lift
+            putToken t                                     # lift
             raise unit
 
 receiver :: forall a b. a -> Maybe b

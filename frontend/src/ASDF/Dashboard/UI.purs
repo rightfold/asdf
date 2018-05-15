@@ -2,7 +2,7 @@ module ASDF.Dashboard.UI
     ( Query
     , Input
     , Output
-    , Monad
+    , Algebra
     , ui
     ) where
 
@@ -11,6 +11,7 @@ import Prelude
 import Data.Maybe (Maybe (..))
 import Halogen.Component (Component, ParentDSL, ParentHTML, parentComponent)
 import Halogen.HTML (HTML)
+import Run (Run)
 
 import ASDF.ListLedger.UI as ListLedger.UI
 import Halogen.HTML as HH
@@ -24,15 +25,15 @@ type ChildQuery = ListLedger.UI.Query
 type Input = Unit
 type Output = Void
 type Slot = Unit
-type Monad = ListLedger.UI.Monad
+type Algebra r = ListLedger.UI.Algebra r
 
-ui :: Component HTML Query Input Output Monad
+ui :: forall r. Component HTML Query Input Output (Run (Algebra r))
 ui = parentComponent {initialState, render, eval, receiver}
 
 initialState :: forall a. a -> State
 initialState _ = unit
 
-render :: State -> ParentHTML Query ChildQuery Slot Monad
+render :: forall r. State -> ParentHTML Query ChildQuery Slot (Run (Algebra r))
 render _ =
     HH.div [HU.classes "asdf--dashboard"]
         [ HH.div [HU.classes "-transaction-form"]
@@ -46,7 +47,7 @@ render _ =
             , HH.button [] [HH.text "Append"] ]
         , HH.slot unit ListLedger.UI.ui unit absurd ]
 
-eval :: Query ~> ParentDSL State Query ChildQuery Slot Output Monad
+eval :: forall r. Query ~> ParentDSL State Query ChildQuery Slot Output (Run (Algebra r))
 eval (Query a) = absurd a
 
 receiver :: forall a b. a -> Maybe b
