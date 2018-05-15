@@ -8,3 +8,7 @@ implemented in COBOL.
 The COBOL source files are divided into /.cob/ files and /.cbl/ files. /.cob/
 files contain programs called from Perl. /.cbl/ files contain programs called
 by other COBOL programs.
+
+The COBOL programs exit with a zero exit status when they succeed, and with a
+non-zero exit status otherwise. In the latter case, 399 is added to the exit
+status to form the status code of the HTTP response.
