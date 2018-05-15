@@ -1,11 +1,11 @@
-module ASDF.Login.AJAX
+module ASDF.LogIn.AJAX
     ( interpret
     ) where
 
 import Prelude
 
 import ASDF.Credentials (EmailAddress, Password)
-import ASDF.Login.Algebra (Login (..))
+import ASDF.LogIn.Algebra (LogIn (..))
 import ASDF.Token (Token (..))
 import Control.Monad.Aff.Class (class MonadAff, liftAff)
 import Control.Monad.Eff.Exception (Error, error)
@@ -14,9 +14,10 @@ import Data.Argonaut.Core (Json, jsonEmptyObject)
 import Data.Argonaut.Decode (class DecodeJson, (.?), decodeJson)
 import Data.Argonaut.Encode (class EncodeJson, (~>), (:=), encodeJson)
 import Data.Either (either)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe (..))
 import Data.Newtype (unwrap)
 import Network.HTTP.Affjax (AJAX)
+import Network.HTTP.StatusCode (StatusCode (..))
 
 import Network.HTTP.Affjax as Affjax
 
@@ -26,15 +27,22 @@ baseURL = "http://localhost:8080"
 interpret
     :: forall eff m
      . MonadAff (ajax :: AJAX | eff) m
-    => Login ~> m
-interpret (Login next emailAddress password) = liftAff $ do
+    => LogIn ~> m
+interpret (LogIn next emailAddress password) = liftAff $ do
     let request = encodeJson $ Request emailAddress password
-    {response} <- Affjax.post (baseURL <> "/login") request
-    Response token <- decodeJsonM response
-    pure <<< next $ token
+    {status, response} <- Affjax.post (baseURL <> "/log-in") request
+    case status of
+        StatusCode 200 -> do
+            Response token <- decodeJsonM response
+            pure <<< next $ Just token
+        StatusCode 401 ->
+            pure <<< next $ Nothing
+        StatusCode c ->
+            liftAff <<< throwError <<< error $
+                "Unexpected status code " <> show c
 
 data Request = Request EmailAddress Password
-newtype Response = Response (Maybe Token)
+newtype Response = Response Token
 
 instance encodeJsonRequest :: EncodeJson Request where
     encodeJson (Request emailAddress password) =
@@ -45,7 +53,7 @@ instance encodeJsonRequest :: EncodeJson Request where
 instance decodeJsonResponse :: DecodeJson Response where
     decodeJson json = do
         output <- decodeJson json >>= (_ .? "token")
-        pure <<< Response $ Token <$> output
+        pure <<< Response $ Token output
 
 decodeJsonM
     :: forall m a

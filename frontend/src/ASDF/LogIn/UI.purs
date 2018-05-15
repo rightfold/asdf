@@ -1,4 +1,4 @@
-module ASDF.Login.UI
+module ASDF.LogIn.UI
     ( Query
     , Input
     , Output
@@ -10,7 +10,7 @@ import Prelude
 
 import ASDF.Authenticate.Algebra (AUTHENTICATE, getToken, putToken)
 import ASDF.Credentials (EmailAddress (..), Password (..))
-import ASDF.Login.Algebra (LOGIN, login)
+import ASDF.LogIn.Algebra (LOGIN, logIn)
 import ASDF.Token (Token)
 import Control.Monad.Trans.Class (lift)
 import Control.MonadZero.Extra (guarding)
@@ -50,7 +50,7 @@ data Query a
     | SubmitQuery a
 type Input = Unit
 type Output = Unit
-type Algebra r = (authenticate :: AUTHENTICATE, login :: LOGIN | r)
+type Algebra r = (authenticate :: AUTHENTICATE, logIn :: LOGIN | r)
 
 ui :: forall r. Component HTML Query Input Output (Run (Algebra r))
 ui = lifecycleComponent {initialState, render, eval, receiver, initializer, finalizer}
@@ -62,12 +62,12 @@ render :: State -> ComponentHTML Query
 render s =
     HH.div [] $ join
         [ guarding (s ^. stateError)
-          [HH.text I18N.m_login_invalidCredentials]
+          [HH.text I18N.m_logIn_invalidCredentials]
         , [ HU.lensedInput HP.InputEmail stateEmailAddress (InputQuery unit) s
           , HU.lensedInput HP.InputPassword statePassword (InputQuery unit) s
           , HH.button
               [HE.onClick (const (Just (SubmitQuery unit)))]
-              [HH.text I18N.m_login_logIn] ] ]
+              [HH.text I18N.m_logIn_logIn] ] ]
 
 eval :: forall r. Query ~> ComponentDSL State Query Output (Run (Algebra r))
 
@@ -82,7 +82,7 @@ eval (InputQuery next f) =
 eval (SubmitQuery next) = do
     emailAddress <- use $ stateEmailAddress <<< to EmailAddress
     password <- use $ statePassword <<< to Password
-    token <- login emailAddress password                   # lift
+    token <- logIn emailAddress password                   # lift
 
     stateError .= isNothing token
     traverse_ success token

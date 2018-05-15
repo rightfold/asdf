@@ -25,9 +25,9 @@ my %ENDPOINTS = (
         },
     ),
     endpoint(
-        'login',
+        'log-in',
         [qw(email_address password)],
-        sub { {token => shift || undef} },
+        sub { {token => shift} },
     ),
 );
 

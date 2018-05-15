@@ -33,7 +33,7 @@ sub endpoint {
         if ($ok) {
             200, $output->($stdout);
         } else {
-            400, {error => $stdout};
+            400 + ($? >> 8) - 1, {error => $stdout};
         }
     };
 }

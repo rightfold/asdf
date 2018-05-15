@@ -19,30 +19,30 @@ import Halogen.HTML (HTML)
 import Run (Run)
 
 import ASDF.Dashboard.UI as Dashboard.UI
-import ASDF.Login.UI as Login.UI
+import ASDF.LogIn.UI as LogIn.UI
 import Halogen.HTML as HH
 
 data State
-    = Login
+    = LogIn
     | Dashboard
     | Settings
 
 data Query a
     = LoggedInQuery a
-type ChildQuery = Login.UI.Query <\/> Dashboard.UI.Query <\/> Const Void
+type ChildQuery = LogIn.UI.Query <\/> Dashboard.UI.Query <\/> Const Void
 type Input = Unit
 type Output = Void
 type Slot = Either2 Unit Unit
-type Algebra r = Login.UI.Algebra (Dashboard.UI.Algebra r)
+type Algebra r = LogIn.UI.Algebra (Dashboard.UI.Algebra r)
 
 ui :: forall r. Component HTML Query Input Output (Run (Algebra r))
 ui = parentComponent {initialState, render, eval, receiver}
 
 initialState :: Input -> State
-initialState _ = Login
+initialState _ = LogIn
 
 render :: forall r. State -> ParentHTML Query ChildQuery Slot (Run (Algebra r))
-render Login     = HH.slot' cp1 unit Login.UI.ui unit (Just <<< LoggedInQuery)
+render LogIn     = HH.slot' cp1 unit LogIn.UI.ui unit (Just <<< LoggedInQuery)
 render Dashboard = HH.slot' cp2 unit Dashboard.UI.ui unit absurd
 render Settings  = HH.text "SETTINGS"
 

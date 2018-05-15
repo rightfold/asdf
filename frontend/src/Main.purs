@@ -20,7 +20,7 @@ import Run (Run)
 import ASDF.Application.UI as Application.UI
 import ASDF.Authenticate.WebStorage as Authenticate.WebStorage
 import ASDF.ListLedger.AJAX as ListLedger.AJAX
-import ASDF.Login.AJAX as Login.AJAX
+import ASDF.LogIn.AJAX as LogIn.AJAX
 import DOM.HTML (window) as DOM
 import DOM.HTML.Window (localStorage) as DOM
 import Run as Run
@@ -45,6 +45,6 @@ interpreter = liftEff $ do
         interpret = match
             { authenticate: \a -> Authenticate.WebStorage.interpret storage a
             , listLedger:   \a -> ListLedger.AJAX.interpret a
-            , login:        \a -> Login.AJAX.interpret a }
+            , logIn:        \a -> LogIn.AJAX.interpret a }
 
     pure $ NT (Run.interpret interpret)

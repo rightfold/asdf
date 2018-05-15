@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. asdf-login.
+       PROGRAM-ID. asdf-log-in.
 
        DATA DIVISION.
        WORKING-STORAGE SECTION.
@@ -16,6 +16,8 @@
       *        TODO: Return actual token.
                DISPLAY '0e97bec6ee8b49fbbabbaa9d1f404c3d'
                    WITH NO ADVANCING
+           ELSE
+               MOVE 2 TO RETURN-CODE
            END-IF
 
            STOP RUN
