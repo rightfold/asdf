@@ -1,6 +1,9 @@
 COBC=cobc
 COBCFLAGS=-std=mf -Wall -I src/business
 
+CUKES=cucumber
+CUKESFLAGS=
+
 COB_SOURCES=$(shell find src/ -name '*.cob')
 COB_OBJECTS=$(patsubst src/%.cob,build/src/%,${COB_SOURCES})
 
@@ -19,7 +22,7 @@ clean:
 
 build: ${COB_OBJECTS}
 
-test: unit-test
+test: unit-test integration-test
 
 .PHONY: unit-test
 unit-test: ${COB_UT_RUN}
@@ -27,6 +30,10 @@ unit-test: ${COB_UT_RUN}
 .PHONY: unit-test/%
 unit-test/%: build/unit-test/%
 	$<
+
+.PHONY: integration-test
+integration-test: build
+	cd integration-test && ${CUKES} ${CUKESFLAGS}
 
 build/src/%: src/%.cob ${CBL_OBJECTS}
 	mkdir -p $(dir $@)

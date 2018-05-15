@@ -29,8 +29,12 @@ sub endpoint {
     "/$name", sub {
         my $request = shift;
         my @arguments = map { $request->{$_} } @$fields;
-        run ["build/src/business/asdf-$name", @arguments], '>', \my $stdout;
-        200, $output->($stdout);
+        my $ok = run ["build/src/business/asdf-$name", @arguments], '>', \my $stdout;
+        if ($ok) {
+            200, $output->($stdout);
+        } else {
+            400, {error => $stdout};
+        }
     };
 }
 

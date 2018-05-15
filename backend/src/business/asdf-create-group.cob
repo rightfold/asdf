@@ -28,12 +28,21 @@
 
            ACCEPT fs-name FROM ARGUMENT-VALUE
 
+           PERFORM para-validate
+
            PERFORM para-create-dir
            PERFORM para-write-info
 
            DISPLAY ws-id-text WITH NO ADVANCING
 
            STOP RUN
+           .
+
+       para-validate.
+           IF fs-name IS EQUAL TO SPACES THEN
+               MOVE 1 TO RETURN-CODE
+               STOP RUN
+           END-IF
            .
 
        para-create-dir.
