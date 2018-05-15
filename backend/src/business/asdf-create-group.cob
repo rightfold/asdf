@@ -31,7 +31,7 @@
            PERFORM para-create-dir
            PERFORM para-write-info
 
-           DISPLAY ws-id-text
+           DISPLAY ws-id-text WITH NO ADVANCING
 
            STOP RUN
            .
