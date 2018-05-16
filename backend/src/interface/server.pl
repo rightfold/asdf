@@ -28,7 +28,7 @@ my %ENDPOINTS = (
                 , comment   => $fields[3]
                 , debitor   => $fields[4]
                 , creditor  => $fields[5]
-                , amount    => $fields[6] };
+                , amount    => 0 + $fields[6] };
             } split(/\n/, shift);
             {transactions => \@transactions};
         },

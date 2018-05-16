@@ -21,13 +21,11 @@ import Control.Monad.Error.Class (throwError)
 import Control.MonadZero (guard)
 import Data.Argonaut.Decode (class DecodeJson, (.?), decodeJson)
 import Data.DateTime.Instant (Instant)
-import Data.Int.Positive (Positive, _Positive)
+import Data.Int.Positive (Positive)
 import Data.Lens (Lens', Prism', lens, prism')
-import Data.Lens.Fold.Partial ((^?!))
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Newtype (class Newtype)
-import Partial.Unsafe (unsafePartial)
 
 newtype LedgerID =
     LedgerID String
@@ -58,8 +56,7 @@ instance decodeJsonTransaction :: DecodeJson Transaction where
         comment <- decodeJson json >>= (_ .? "comment")
         debitor <- decodeJson json >>= (_ .? "debitor")
         creditor <- decodeJson json >>= (_ .? "creditor")
-        -- TODO: amount <- decodeJson json >>= (_ .? "amount")
-        let amount = unsafePartial $ 200 ^?! _Positive
+        amount <- decodeJson json >>= (_ .? "amount")
         pure $ Transaction type_ timestamp comment debitor creditor amount
 
 transactionType :: Lens' Transaction TransactionType

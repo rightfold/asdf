@@ -9,9 +9,11 @@ module Data.Int.Positive
 import Prelude
 
 import Control.MonadZero (guard)
+import Data.Argonaut.Decode (class DecodeJson, decodeJson)
+import Data.Either (note)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
-import Data.Lens (Iso', Prism', prism', review)
+import Data.Lens (Iso', Prism', preview, prism', review)
 import Data.Lens.Iso.Newtype (_Newtype)
 import Data.Newtype (class Newtype)
 
@@ -24,6 +26,9 @@ derive instance ordPositive :: Ord Positive
 
 instance showPositive :: Show Positive where
     show n = "(unsafePartial (" <> show (review _Positive n) <> " ^?! _Positive))"
+
+instance decodeJsonPositive :: DecodeJson Positive where
+    decodeJson = note "Non-positive integer" <<< preview _Positive <=< decodeJson
 
 -- | If overflow occured such that the integer would now be negative, `review`
 -- | returns `1`.
