@@ -8,9 +8,8 @@ import Data.Argonaut.Encode (class EncodeJson)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Newtype (class Newtype)
-import Data.UUID (UUID)
 
-newtype GroupID = GroupID UUID
+newtype GroupID = GroupID String
 
 derive instance eqGroupID :: Eq GroupID
 derive instance ordGroupID :: Ord GroupID

@@ -16,7 +16,6 @@ import Data.Lens (Lens', (^.), (.=))
 import Data.Lens.Record (prop)
 import Data.Maybe (Maybe (..))
 import Data.Symbol (SProxy (..))
-import Data.UUID (nil)
 import Halogen.Component (Component, ComponentDSL, ComponentHTML, lifecycleComponent)
 import Halogen.HTML (HTML)
 import Run (Run)
@@ -51,7 +50,7 @@ render s = HH.text <<< show $ s ^. stateLedgerSlice
 eval :: forall r. Query ~> ComponentDSL State Query Output (Run (Algebra r))
 
 eval (InitializeQuery next) = do
-  ledgerSlice <- listLedger (GroupID nil)                  # lift
+  ledgerSlice <- listLedger (GroupID "00000000000000000000000000000000") # lift
   stateError .= false
   stateLedgerSlice .= ledgerSlice
   pure next

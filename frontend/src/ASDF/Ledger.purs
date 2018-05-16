@@ -27,11 +27,10 @@ import Data.Lens.Fold.Partial ((^?!))
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Newtype (class Newtype)
-import Data.UUID (UUID)
 import Partial.Unsafe (unsafePartial)
 
 newtype LedgerID =
-    LedgerID UUID
+    LedgerID String
 
 derive instance eqLedgerID :: Eq LedgerID
 derive instance ordLedgerID :: Ord LedgerID

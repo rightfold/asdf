@@ -8,10 +8,9 @@ import Data.Argonaut.Decode (class DecodeJson)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Newtype (class Newtype)
-import Data.UUID (UUID)
 
 newtype AccountID =
-    AccountID UUID
+    AccountID String
 
 derive instance eqAccountID :: Eq AccountID
 derive instance ordAccountID :: Ord AccountID
