@@ -20,7 +20,16 @@ my %ENDPOINTS = (
         'list-ledger',
         [qw(group)],
         sub {
-            my @transactions = map { [split /\t/] } split(/\n/, shift);
+            my @transactions = map {
+                my @fields = split /\t/;
+                { id        => $fields[0]
+                , type      => {D => 'debt', P => 'payment'}->{$fields[1]}
+                , timestamp => $fields[2]
+                , comment   => $fields[3]
+                , debitor   => $fields[4]
+                , creditor  => $fields[5]
+                , amount    => $fields[6] };
+            } split(/\n/, shift);
             {transactions => \@transactions};
         },
     ),

@@ -17,14 +17,18 @@ module ASDF.Ledger
 import Prelude
 
 import ASDF.Account (AccountID)
+import Control.Monad.Error.Class (throwError)
 import Control.MonadZero (guard)
+import Data.Argonaut.Decode (class DecodeJson, (.?), decodeJson)
 import Data.DateTime.Instant (Instant)
-import Data.Int.Positive (Positive)
+import Data.Int.Positive (Positive, _Positive)
 import Data.Lens (Lens', Prism', lens, prism')
+import Data.Lens.Fold.Partial ((^?!))
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.Newtype (class Newtype)
 import Data.UUID (UUID)
+import Partial.Unsafe (unsafePartial)
 
 newtype LedgerID =
     LedgerID UUID
@@ -46,6 +50,18 @@ data Transaction =
 
 derive instance genericTransaction :: Generic Transaction _
 instance showTransaction :: Show Transaction where show = genericShow
+
+instance decodeJsonTransaction :: DecodeJson Transaction where
+    decodeJson json = do
+        type_ <- decodeJson json >>= (_ .? "type")
+        -- TODO: timestamp <- decodeJson json >>= (_ .? "timestamp")
+        let timestamp = top
+        comment <- decodeJson json >>= (_ .? "comment")
+        debitor <- decodeJson json >>= (_ .? "debitor")
+        creditor <- decodeJson json >>= (_ .? "creditor")
+        -- TODO: amount <- decodeJson json >>= (_ .? "amount")
+        let amount = unsafePartial $ 200 ^?! _Positive
+        pure $ Transaction type_ timestamp comment debitor creditor amount
 
 transactionType :: Lens' Transaction TransactionType
 transactionType = lens get set
@@ -84,6 +100,12 @@ derive instance eqTransactionType :: Eq TransactionType
 derive instance ordTransactionType :: Ord TransactionType
 derive instance genericTransactionType :: Generic TransactionType _
 instance showTransactionType :: Show TransactionType where show = genericShow
+
+instance decodeJsonTransactionType :: DecodeJson TransactionType where
+    decodeJson json = decodeJson json >>= case _ of
+        "debt" -> pure Debt
+        "payment" -> pure Payment
+        s -> throwError $ "Invalid transaction type: " <> show s
 
 _Debt :: Prism' TransactionType Unit
 _Debt = prism' (const Debt) (void <<< guard <<< eq Debt)

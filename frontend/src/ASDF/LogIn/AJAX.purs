@@ -8,12 +8,12 @@ import ASDF.Credentials (EmailAddress, Password)
 import ASDF.LogIn.Algebra (LogIn (..))
 import ASDF.Token (Token (..))
 import Control.Monad.Aff.Class (class MonadAff, liftAff)
-import Control.Monad.Eff.Exception (Error, error)
-import Control.Monad.Error.Class (class MonadError, throwError)
-import Data.Argonaut.Core (Json, jsonEmptyObject)
+import Control.Monad.Eff.Exception (error)
+import Control.Monad.Error.Class (throwError)
+import Data.Argonaut.Core (jsonEmptyObject)
 import Data.Argonaut.Decode (class DecodeJson, (.?), decodeJson)
 import Data.Argonaut.Encode (class EncodeJson, (~>), (:=), encodeJson)
-import Data.Either (either)
+import Data.Argonaut.Extra (decodeJsonM)
 import Data.Maybe (Maybe (..))
 import Data.Newtype (unwrap)
 import Network.HTTP.Affjax (AJAX)
@@ -54,11 +54,3 @@ instance decodeJsonResponse :: DecodeJson Response where
     decodeJson json = do
         output <- decodeJson json >>= (_ .? "token")
         pure <<< Response $ Token output
-
-decodeJsonM
-    :: forall m a
-     . MonadError Error m
-    => DecodeJson a
-    => Json
-    -> m a
-decodeJsonM = either (throwError <<< error) pure <<< decodeJson
