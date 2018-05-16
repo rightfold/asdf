@@ -1,7 +1,7 @@
 require 'net/http'
 
-Given('The group name is empty') do
-    @group_name = ''
+Given('The group name is {string}') do |group_name|
+    @group_name = group_name
 end
 
 When('A group creation attempt is made') do
@@ -17,6 +17,14 @@ Then('The group creation attempt fails') do
     raise "#{@response.code} #{@response.body}" unless @response.code == '400'
 end
 
+Then('The group creation attempt succeeds') do
+    raise "#{@response.code} #{@response.body}" unless @response.code == '200'
+end
+
 Then('The group is not saved') do
+    pending
+end
+
+Then('The group is saved') do
     pending
 end
