@@ -1,0 +1,13 @@
+{
+    "autoload": {
+        "psr-4": {
+            "ASDF\\": "src/ASDF/"
+        }
+    },
+    "require": {
+        "symfony/http-foundation": "4.1.0-BETA1"
+    },
+    "require-dev": {
+        "vimeo/psalm": "2.0.0"
+    }
+}

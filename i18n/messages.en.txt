@@ -1,2 +1,0 @@
-logIn.invalidCredentials Your email address or password is unknown or invalid
-logIn.logIn Log In

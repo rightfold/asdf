@@ -1,2 +1,0 @@
-logIn.invalidCredentials Uw e-mailadres of wachtwoord is onbekend of onjuist
-logIn.logIn Log in
