@@ -13,8 +13,10 @@ final class Main
 
     public static function main(): void
     {
+        $buildPath = __DIR__ . '/../../../build/cobol/src';
+
         $handlers = [
-            '/list-ledger' => new UseCaseHandler('list-ledger', ['group']),
+            '/list-ledger' => new UseCaseHandler("$buildPath/asdf-list-ledger.cob.out", ['group']),
         ];
 
         $handler = $handlers['/list-ledger'];

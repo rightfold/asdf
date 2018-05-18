@@ -1,7 +1,8 @@
 {
     "autoload": {
         "psr-4": {
-            "ASDF\\": "src/ASDF/"
+            "ASDF\\": "src/ASDF/",
+            "Process\\": "src/Process/"
         }
     },
     "require": {
