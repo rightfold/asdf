@@ -7,7 +7,8 @@
        SELECT fd-ledger
            ASSIGN DYNAMIC ws-ledger
            ACCESS IS SEQUENTIAL
-           ORGANIZATION IS RECORD SEQUENTIAL.
+           ORGANIZATION IS RECORD SEQUENTIAL
+           FILE STATUS IS ws-ledger-status.
 
        DATA DIVISION.
        FILE SECTION.
@@ -17,6 +18,7 @@
        WORKING-STORAGE SECTION.
        01 ws-group                     PIC X(16).
        01 ws-ledger                    PIC X(256).
+       01 ws-ledger-status             PIC XX.
 
        01 ws-transaction.
            02 ws-id                   PIC X(32).
@@ -69,6 +71,7 @@
                INTO ws-ledger
 
            OPEN INPUT fd-ledger
+           PERFORM para-check-ledger-status
            SET ws-eof-no TO TRUE
            PERFORM para-list-one UNTIL ws-eof-yes
            CLOSE fd-ledger
@@ -105,4 +108,23 @@
            CALL 'asdf-format-uuid' USING fs-creditor ws-creditor
 
            MOVE fs-amount TO ws-amount
+           .
+
+       para-check-ledger-status.
+           EVALUATE ws-ledger-status
+
+      *    Successful completion.
+           WHEN 00
+               CONTINUE
+
+      *    File not found. Assume empty ledger.
+           WHEN 35
+               STOP RUN
+
+      *    On other errors, abend.
+           WHEN OTHER
+               MOVE 101 TO RETURN-CODE
+               STOP RUN
+
+           END-EVALUATE
            .
