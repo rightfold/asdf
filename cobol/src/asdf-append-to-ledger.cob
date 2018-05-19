@@ -18,7 +18,9 @@
        01 ws-group                     PIC X(16).
        01 ws-ledger                    PIC X(256).
 
+       01 ws-amount                    PIC X(10).
        01 ws-uuid-text                 PIC X(32).
+
 
        PROCEDURE DIVISION.
        para-main.
@@ -33,14 +35,38 @@
 
        para-parse.
            ACCEPT ws-uuid-text FROM ARGUMENT-VALUE
-               CALL 'asdf-parse-uuid' USING ws-uuid-text ws-group
+           CALL 'asdf-parse-uuid' USING ws-uuid-text ws-group
+
            ACCEPT fs-type FROM ARGUMENT-VALUE
+           IF fs-type IS NOT EQUAL TO 'D' AND 'P' THEN
+               DISPLAY 'Invalid type' WITH NO ADVANCING
+               GO TO para-invalid-parse
+           END-IF
+
            ACCEPT fs-comment FROM ARGUMENT-VALUE
+           IF fs-comment IS EQUAL TO ALL SPACES THEN
+               DISPLAY 'Empty comment' WITH NO ADVANCING
+               GO TO para-invalid-parse
+           END-IF
+
            ACCEPT ws-uuid-text FROM ARGUMENT-VALUE
-               CALL 'asdf-parse-uuid' USING ws-uuid-text fs-debitor
+           CALL 'asdf-parse-uuid' USING ws-uuid-text fs-debitor
+
            ACCEPT ws-uuid-text FROM ARGUMENT-VALUE
-               CALL 'asdf-parse-uuid' USING ws-uuid-text fs-creditor
-           ACCEPT fs-amount FROM ARGUMENT-VALUE
+           CALL 'asdf-parse-uuid' USING ws-uuid-text fs-creditor
+
+           ACCEPT ws-amount FROM ARGUMENT-VALUE
+           IF FUNCTION TRIM(ws-amount) IS NUMERIC THEN
+               MOVE FUNCTION TRIM(ws-amount) TO fs-amount
+           ELSE
+               DISPLAY 'Non-numeric amount' WITH NO ADVANCING
+               GO TO para-invalid-parse
+           END-IF
+           .
+
+       para-invalid-parse.
+           MOVE 1 TO RETURN-CODE
+           STOP RUN
            .
 
        para-generate.

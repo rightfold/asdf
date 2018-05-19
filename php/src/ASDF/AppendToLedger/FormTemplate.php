@@ -17,13 +17,13 @@ final class FormTemplate {
             <form action="/append-to-ledger" method="post">
                 <input type="hidden" name="group" value="<?php echo \htmlentities($group); ?>">
                 <select name="type">
-                    <option>Debt</option>
-                    <option>Payment</option>
+                    <option value="D">Debt</option>
+                    <option value="P">Payment</option>
                 </select>
                 <textarea name="comment"></textarea>
                 <input type="text" name="debitor">
                 <input type="text" name="creditor">
-                <input type="number" name="amount" step="0.01">
+                <input type="number" name="amount">
                 <button type="submit">Submit</button>
             </form>
         <?php
