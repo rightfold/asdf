@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace ASDF\ListLedger;
 
+use ASDF\MasterTemplate;
 use ASDF\TransactionType;
 
 final class Template {
@@ -15,6 +16,7 @@ final class Template {
      */
     public static function render(iterable $transactions): void
     {
+        MasterTemplate::renderHeader('List ledger');
         ?>
             <table>
                 <tbody>
@@ -39,5 +41,6 @@ final class Template {
                 </tbody>
             </table>
         <?php
+        MasterTemplate::renderFooter();
     }
 }

@@ -1,0 +1,87 @@
+$gr: 1.61803398875;
+
+$unit: 14px;
+
+$page-width: 960px;
+
+$primary-color: peachpuff;
+$secondary-color: salmon;
+$tertiary-color: gray;
+
+*
+{
+    box-sizing: border-box;
+}
+
+body
+{
+    background: white;
+    color: black;
+
+    font-family: sans-serif;
+    font-size: $unit;
+
+    margin: $unit * $gr;
+}
+
+table
+{
+    border-bottom: solid 1px $tertiary-color;
+    border-collapse: collapse;
+    border-right: solid 1px $tertiary-color;
+    border-spacing: 0;
+
+    & > thead, & > tbody, & > tfoot
+    {
+        & > tr
+        {
+            & > th, & > td
+            {
+                border-left: solid 1px $tertiary-color;
+                border-top: solid 1px $tertiary-color;
+
+                line-height: $unit * $gr;
+                padding: 0 $unit * $gr / 2;
+            }
+        }
+    }
+}
+
+.asdf--header, .asdf--content, .asdf--footer
+{
+    border-left: solid 1px $tertiary-color;
+    border-right: solid 1px $tertiary-color;
+
+    margin: 0 auto;
+    padding: $unit * $gr;
+    width: $page-width;
+}
+
+.asdf--header
+{
+    background: $primary-color;
+    border-bottom: solid 1px $tertiary-color;
+    border-top: solid 1px $tertiary-color;
+    color: $secondary-color;
+
+    font-size: 2 * $unit;
+
+    line-height: 2 * $unit * $gr;
+
+    text-transform: uppercase;
+}
+
+.asdf--content
+{
+}
+
+.asdf--footer
+{
+    border-bottom: solid 1px $tertiary-color;
+    border-top: solid 1px $tertiary-color;
+    color: $tertiary-color;
+
+    line-height: $unit * $gr;
+
+    text-align: center;
+}

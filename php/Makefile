@@ -1,8 +1,18 @@
-COMPOSER=composer
+SCSSC=sassc
+SCSSCFLAGS=--precision 10
+
 PSALM=vendor/bin/psalm
 
-.PHONY: build
-build:
+COMPOSER=composer
+
+build: static/application.css type-check
+
+static/application.css: static/application.scss
+static/application.css:
+	${SCSSC} ${SCSSCFLAGS} $< $@
+
+.PHONY: type-check
+type-check:
 	${PSALM}
 
 .PHONY: dependencies
