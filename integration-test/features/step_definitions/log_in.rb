@@ -4,6 +4,7 @@ Given('The email address {string} and the password {string}') do |email_address,
 end
 
 When('A login attempt is made') do
+    pending
     Net::HTTP.start('127.0.0.1', 8080) do |http|
         @response = http.request_post(
             '/log-in',

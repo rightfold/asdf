@@ -5,6 +5,7 @@ Given('The group name is {string}') do |group_name|
 end
 
 When('A group creation attempt is made') do
+    pending
     Net::HTTP.start('127.0.0.1', 8080) do |http|
         @response = http.request_post(
             '/create-group',
