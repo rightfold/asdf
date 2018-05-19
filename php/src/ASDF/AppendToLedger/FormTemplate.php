@@ -14,14 +14,13 @@ final class FormTemplate {
     {
         MasterTemplate::renderHeader('Append to ledger');
         ?>
-            <form action="/append-to-ledger?group=<?php echo \htmlentities($group); ?>"
-                  method="post">
+            <form action="/append-to-ledger" method="post">
+                <input type="hidden" name="group" value="<?php echo \htmlentities($group); ?>">
                 <select name="type">
                     <option>Debt</option>
                     <option>Payment</option>
                 </select>
-                <textarea name="comment">
-                </textarea>
+                <textarea name="comment"></textarea>
                 <input type="text" name="debitor">
                 <input type="text" name="creditor">
                 <input type="number" name="amount" step="0.01">

@@ -18,7 +18,8 @@ final class Main
         /** @var array<string,array<string,Handler>> */
         $handlers = [
             '/append-to-ledger' => [
-                'GET' => AppendToLedger\FormHandler::instance(),
+                'GET'  => AppendToLedger\FormHandler::instance(),
+                'POST' => new AppendToLedger\SubmitHandler($buildPath),
             ],
             '/list-ledger' => [
                 'GET' => new ListLedger\Handler($buildPath),
