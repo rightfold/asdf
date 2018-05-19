@@ -16,7 +16,7 @@ final class Main
         $buildPath = __DIR__ . '/../../../build/cobol/src';
 
         $handlers = [
-            '/list-ledger' => new UseCaseHandler("$buildPath/asdf-list-ledger.cob.out", ['group']),
+            '/list-ledger' => new ListLedger\Handler($buildPath),
         ];
 
         $handler = $handlers['/list-ledger'];
